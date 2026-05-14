@@ -5,6 +5,9 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import Navbar from '../components/common/Navbar'
 import LoadingSpinner from '../components/common/LoadingSpinner'
+import Card from '../components/common/Card'
+import Button from '../components/common/Button'
+import Badge from '../components/common/Badge'
 import { useInterview } from '../hooks/useInterview'
 import { interviewAPI } from '../api/interview.api'
 import { capitalize, formatDuration, getDifficultyBadge } from '../utils/helpers'
@@ -36,7 +39,7 @@ function QuestionCard({ q, index }) {
   const bar = q.score >= 8 ? 'bg-emerald-500' : q.score >= 6 ? 'bg-amber-500' : 'bg-red-500'
   const txt = q.score >= 8 ? 'text-emerald-400' : q.score >= 6 ? 'text-amber-400' : 'text-red-400'
   return (
-    <div className="glass-card overflow-hidden">
+    <Card className="p-0 overflow-hidden">
       <button onClick={() => setOpen(!open)}
         className="w-full flex items-center gap-4 p-5 text-left hover:bg-white/5 transition-colors">
         <span className="flex-shrink-0 w-8 h-8 rounded-lg bg-primary-600/30 text-primary-400 text-sm font-bold flex items-center justify-center">{index + 1}</span>
@@ -69,7 +72,7 @@ function QuestionCard({ q, index }) {
           </div>
         </div>
       )}
-    </div>
+    </Card>
   )
 }
 
@@ -101,7 +104,7 @@ export default function ReportPage() {
       <div className="max-w-4xl mx-auto px-4 py-10 space-y-6">
 
         {/* Hero */}
-        <div className="glass-card p-8 text-center relative overflow-hidden animate-slide-up">
+        <Card className="p-8 text-center relative overflow-hidden animate-slide-up">
           <div className="absolute inset-0 bg-gradient-to-br from-primary-600/10 to-accent-600/5 pointer-events-none" />
           <div className="relative">
             <div className="flex items-center justify-center gap-2 mb-1">
@@ -110,29 +113,31 @@ export default function ReportPage() {
             </div>
             <h1 className="text-3xl font-bold text-white mb-4">{label}</h1>
             <div className="flex flex-wrap justify-center gap-3 mb-6 text-sm">
-              <span className="badge badge-blue">{interview.jobRole}</span>
-              <span className={getDifficultyBadge(interview.difficulty)}>{capitalize(interview.difficulty)}</span>
-              {interview.duration > 0 && <span className="badge badge-purple">⏱ {formatDuration(interview.duration)}</span>}
+              <Badge type="blue">{interview.jobRole}</Badge>
+              <Badge type={interview.difficulty === 'beginner' ? 'green' : interview.difficulty === 'intermediate' ? 'yellow' : 'red'}>
+                {capitalize(interview.difficulty)}
+              </Badge>
+              {interview.duration > 0 && <Badge type="purple">⏱ {formatDuration(interview.duration)}</Badge>}
             </div>
             <ScoreRing score={score} />
             <p className="text-gray-400 text-sm mt-3">Overall Score</p>
           </div>
-        </div>
+        </Card>
 
         {/* Overall Feedback */}
         {interview.overallFeedback && (
-          <div className="glass-card p-6">
+          <Card className="p-6">
             <h2 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
               <HiSparkles className="w-5 h-5 text-primary-400" /> AI Overall Feedback
             </h2>
             <p className="text-gray-300 leading-relaxed">{interview.overallFeedback}</p>
-          </div>
+          </Card>
         )}
 
         {/* Strengths & Improvements */}
         <div className="grid sm:grid-cols-2 gap-4">
           {interview.strengths?.length > 0 && (
-            <div className="glass-card p-6">
+            <Card className="p-6 border-emerald-500/20 bg-emerald-500/5">
               <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
                 <HiCheckCircle className="w-5 h-5 text-emerald-400" /> Strengths
               </h3>
@@ -143,10 +148,10 @@ export default function ReportPage() {
                   </li>
                 ))}
               </ul>
-            </div>
+            </Card>
           )}
           {interview.improvements?.length > 0 && (
-            <div className="glass-card p-6">
+            <Card className="p-6 border-amber-500/20 bg-amber-500/5">
               <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
                 <HiLightBulb className="w-5 h-5 text-amber-400" /> Areas to Improve
               </h3>
@@ -157,28 +162,34 @@ export default function ReportPage() {
                   </li>
                 ))}
               </ul>
-            </div>
+            </Card>
           )}
         </div>
 
         {/* Question Breakdown */}
         <div>
-          <h2 className="text-lg font-semibold text-white mb-4">Question-by-Question Breakdown</h2>
-          <div className="space-y-3">
+          <h2 className="text-lg font-semibold text-white mb-4 px-1">Question-by-Question Breakdown</h2>
+          <div className="space-y-4">
             {interview.questions.map((q, i) => <QuestionCard key={i} q={q} index={i} />)}
           </div>
         </div>
 
         {/* Actions */}
-        <div className="flex flex-col sm:flex-row gap-3">
-          <Link to="/interview/setup" className="btn-primary flex-1 flex items-center justify-center gap-2">
-            <HiArrowPath className="w-5 h-5" /> Practice Again
+        <div className="flex flex-col sm:flex-row gap-4 pt-4">
+          <Link to="/interview/setup" className="flex-1">
+            <Button className="w-full flex items-center justify-center gap-2 py-4">
+              <HiArrowPath className="w-5 h-5" /> Practice Again
+            </Button>
           </Link>
-          <Link to="/dashboard" className="btn-secondary flex-1 flex items-center justify-center gap-2">
-            <HiHome className="w-5 h-5" /> Dashboard
+          <Link to="/dashboard" className="flex-1">
+            <Button variant="secondary" className="w-full flex items-center justify-center gap-2 py-4">
+              <HiHome className="w-5 h-5" /> Dashboard
+            </Button>
           </Link>
-          <Link to="/history" className="btn-secondary flex-1 flex items-center justify-center gap-2">
-            View History
+          <Link to="/history" className="flex-1">
+            <Button variant="secondary" className="w-full py-4">
+              View History
+            </Button>
           </Link>
         </div>
       </div>

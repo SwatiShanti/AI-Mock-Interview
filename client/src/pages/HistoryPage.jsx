@@ -5,6 +5,9 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import Navbar from '../components/common/Navbar'
 import LoadingSpinner from '../components/common/LoadingSpinner'
+import Card from '../components/common/Card'
+import Button from '../components/common/Button'
+import Badge from '../components/common/Badge'
 import { historyAPI } from '../api/interview.api'
 import { formatDate, getDifficultyBadge, capitalize, formatDuration, getScoreTextColor } from '../utils/helpers'
 import { HiTrash, HiEye, HiChevronLeft, HiChevronRight, HiClipboardDocumentList, HiPlayCircle } from 'react-icons/hi2'
@@ -59,36 +62,40 @@ export default function HistoryPage() {
               {pagination.total} total session{pagination.total !== 1 ? 's' : ''} completed
             </p>
           </div>
-          <Link to="/interview/setup" className="btn-primary flex items-center gap-2 self-start">
-            <HiPlayCircle className="w-5 h-5" /> New Interview
+          <Link to="/interview/setup">
+            <Button className="flex items-center gap-2">
+              <HiPlayCircle className="w-5 h-5" /> New Interview
+            </Button>
           </Link>
         </div>
 
         {loading ? (
           <div className="flex justify-center py-20"><LoadingSpinner size="lg" text="Loading history…" /></div>
         ) : interviews.length === 0 ? (
-          <div className="glass-card p-16 text-center">
+          <Card className="p-16 text-center">
             <HiClipboardDocumentList className="w-16 h-16 text-gray-700 mx-auto mb-4" />
             <h3 className="text-white font-semibold text-xl mb-2">No interviews yet</h3>
             <p className="text-gray-500 mb-6">Start your first mock interview to build your history.</p>
-            <Link to="/interview/setup" className="btn-primary inline-flex items-center gap-2">
-              <HiPlayCircle className="w-5 h-5" /> Start Interview
+            <Link to="/interview/setup">
+              <Button className="inline-flex items-center gap-2">
+                <HiPlayCircle className="w-5 h-5" /> Start Interview
+              </Button>
             </Link>
-          </div>
+          </Card>
         ) : (
           <>
             {/* Desktop table */}
-            <div className="glass-card overflow-hidden hidden sm:block">
+            <Card className="overflow-hidden hidden sm:block p-0">
               <table className="w-full text-sm">
                 <thead className="border-b border-white/10">
                   <tr className="text-gray-500">
-                    <th className="text-left px-6 py-4 font-medium">Job Role</th>
-                    <th className="text-left px-6 py-4 font-medium">Difficulty</th>
-                    <th className="text-left px-6 py-4 font-medium">Score</th>
-                    <th className="text-left px-6 py-4 font-medium">Questions</th>
-                    <th className="text-left px-6 py-4 font-medium">Duration</th>
-                    <th className="text-left px-6 py-4 font-medium">Date</th>
-                    <th className="text-left px-6 py-4 font-medium">Actions</th>
+                    <th className="text-left px-6 py-4 font-medium uppercase tracking-wider text-xs">Job Role</th>
+                    <th className="text-left px-6 py-4 font-medium uppercase tracking-wider text-xs">Difficulty</th>
+                    <th className="text-left px-6 py-4 font-medium uppercase tracking-wider text-xs">Score</th>
+                    <th className="text-left px-6 py-4 font-medium uppercase tracking-wider text-xs text-center">Questions</th>
+                    <th className="text-left px-6 py-4 font-medium uppercase tracking-wider text-xs">Duration</th>
+                    <th className="text-left px-6 py-4 font-medium uppercase tracking-wider text-xs">Date</th>
+                    <th className="text-right px-6 py-4 font-medium uppercase tracking-wider text-xs">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5">
@@ -98,34 +105,36 @@ export default function HistoryPage() {
                         <p className="text-white font-medium">{iv.jobRole}</p>
                       </td>
                       <td className="px-6 py-4">
-                        <span className={getDifficultyBadge(iv.difficulty)}>{capitalize(iv.difficulty)}</span>
+                        <Badge type={iv.difficulty === 'beginner' ? 'green' : iv.difficulty === 'intermediate' ? 'yellow' : 'red'}>
+                          {capitalize(iv.difficulty)}
+                        </Badge>
                       </td>
                       <td className="px-6 py-4">
                         <span className={`text-lg font-bold ${getScoreTextColor(iv.overallScore)}`}>
                           {iv.overallScore}%
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-gray-400">{iv.questionCount || '—'}</td>
-                      <td className="px-6 py-4 text-gray-400">{iv.duration ? formatDuration(iv.duration) : '—'}</td>
-                      <td className="px-6 py-4 text-gray-400">{formatDate(iv.createdAt)}</td>
+                      <td className="px-6 py-4 text-gray-400 text-center">{iv.questionCount || '—'}</td>
+                      <td className="px-6 py-4 text-gray-400">
+                        <Badge type="purple">{iv.duration ? formatDuration(iv.duration) : '—'}</Badge>
+                      </td>
+                      <td className="px-6 py-4 text-gray-400 whitespace-nowrap">{formatDate(iv.createdAt)}</td>
                       <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
-                          <Link
-                            to={`/interview/${iv._id}/report`}
-                            className="p-2 rounded-lg bg-primary-500/20 text-primary-400 hover:bg-primary-500/30 transition-colors"
-                            title="View Report"
-                          >
-                            <HiEye className="w-4 h-4" />
+                        <div className="flex items-center justify-end gap-2">
+                          <Link to={`/interview/${iv._id}/report`}>
+                            <button className="p-2 rounded-lg bg-primary-500/10 text-primary-400 hover:bg-primary-500/20 transition-all" title="View Report">
+                              <HiEye className="w-5 h-5" />
+                            </button>
                           </Link>
                           <button
                             onClick={() => handleDelete(iv._id)}
                             disabled={deleting === iv._id}
-                            className="p-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors disabled:opacity-50"
+                            className="p-2 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-all disabled:opacity-50"
                             title="Delete"
                           >
                             {deleting === iv._id
                               ? <LoadingSpinner size="sm" />
-                              : <HiTrash className="w-4 h-4" />}
+                              : <HiTrash className="w-5 h-5" />}
                           </button>
                         </div>
                       </td>
@@ -133,12 +142,12 @@ export default function HistoryPage() {
                   ))}
                 </tbody>
               </table>
-            </div>
+            </Card>
 
             {/* Mobile cards */}
             <div className="space-y-4 sm:hidden">
               {interviews.map((iv) => (
-                <div key={iv._id} className="glass-card p-5">
+                <Card key={iv._id} className="p-5">
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div>
                       <p className="text-white font-semibold">{iv.jobRole}</p>
@@ -149,34 +158,49 @@ export default function HistoryPage() {
                     </span>
                   </div>
                   <div className="flex items-center gap-2 mb-4 flex-wrap">
-                    <span className={getDifficultyBadge(iv.difficulty)}>{capitalize(iv.difficulty)}</span>
-                    {iv.duration > 0 && <span className="badge badge-purple">{formatDuration(iv.duration)}</span>}
+                    <Badge type={iv.difficulty === 'beginner' ? 'green' : iv.difficulty === 'intermediate' ? 'yellow' : 'red'}>
+                      {capitalize(iv.difficulty)}
+                    </Badge>
+                    {iv.duration > 0 && <Badge type="purple">{formatDuration(iv.duration)}</Badge>}
                   </div>
                   <div className="flex gap-2">
-                    <Link to={`/interview/${iv._id}/report`} className="btn-secondary flex-1 flex items-center justify-center gap-2 py-2 text-sm">
-                      <HiEye className="w-4 h-4" /> View Report
+                    <Link to={`/interview/${iv._id}/report`} className="flex-1">
+                      <Button variant="secondary" className="w-full flex items-center justify-center gap-2 py-2 text-sm">
+                        <HiEye className="w-4 h-4" /> View Report
+                      </Button>
                     </Link>
-                    <button onClick={() => handleDelete(iv._id)} disabled={deleting === iv._id}
-                      className="btn-danger px-4 py-2 text-sm">
+                    <button 
+                      onClick={() => handleDelete(iv._id)} 
+                      disabled={deleting === iv._id}
+                      className="px-4 py-2 rounded-xl bg-red-600/10 border border-red-500/20 text-red-500 hover:bg-red-600/20 transition-all disabled:opacity-50"
+                    >
                       <HiTrash className="w-4 h-4" />
                     </button>
                   </div>
-                </div>
+                </Card>
               ))}
             </div>
 
             {/* Pagination */}
             {pagination.pages > 1 && (
               <div className="flex items-center justify-center gap-4 mt-8">
-                <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}
-                  className="btn-secondary px-4 py-2 flex items-center gap-1 disabled:opacity-40">
+                <Button 
+                  variant="secondary"
+                  onClick={() => setPage((p) => Math.max(1, p - 1))} 
+                  disabled={page === 1}
+                  className="px-4 py-2 flex items-center gap-1"
+                >
                   <HiChevronLeft className="w-5 h-5" /> Prev
-                </button>
-                <span className="text-gray-400 text-sm">Page {page} of {pagination.pages}</span>
-                <button onClick={() => setPage((p) => Math.min(pagination.pages, p + 1))} disabled={page === pagination.pages}
-                  className="btn-secondary px-4 py-2 flex items-center gap-1 disabled:opacity-40">
+                </Button>
+                <span className="text-gray-400 text-sm font-medium">Page {page} of {pagination.pages}</span>
+                <Button 
+                  variant="secondary"
+                  onClick={() => setPage((p) => Math.min(pagination.pages, p + 1))} 
+                  disabled={page === pagination.pages}
+                  className="px-4 py-2 flex items-center gap-1"
+                >
                   Next <HiChevronRight className="w-5 h-5" />
-                </button>
+                </Button>
               </div>
             )}
           </>

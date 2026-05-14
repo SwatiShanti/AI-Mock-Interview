@@ -6,6 +6,9 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import Navbar from '../components/common/Navbar'
 import LoadingSpinner from '../components/common/LoadingSpinner'
+import Card from '../components/common/Card'
+import Button from '../components/common/Button'
+import Badge from '../components/common/Badge'
 import { useInterview } from '../hooks/useInterview'
 import { useTimer } from '../hooks/useTimer'
 import { capitalize } from '../utils/helpers'
@@ -19,7 +22,7 @@ import {
 export default function InterviewPage() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { currentInterview, answers, updateAnswer, submitInterview, submitting, startInterview } = useInterview()
+  const { currentInterview, answers, updateAnswer, submitInterview, submitting } = useInterview()
   const { formatted, elapsed, start: startTimer, stop: stopTimer } = useTimer()
 
   const [interview,    setInterview]    = useState(currentInterview)
@@ -97,12 +100,14 @@ export default function InterviewPage() {
 
           <div className="flex items-center gap-4">
             {/* Answered counter */}
-            <div className="hidden sm:flex items-center gap-1.5 badge badge-blue">
-              <HiCheckCircle className="w-3.5 h-3.5" />
-              {answered}/{total} answered
+            <div className="hidden sm:flex">
+              <Badge type="blue" className="gap-1.5 py-1.5 px-4">
+                <HiCheckCircle className="w-3.5 h-3.5" />
+                {answered}/{total} answered
+              </Badge>
             </div>
             {/* Timer */}
-            <div className="flex items-center gap-1.5 glass-card px-3 py-1.5 font-mono text-sm text-primary-400">
+            <div className="flex items-center gap-1.5 glass-card px-4 py-1.5 font-mono text-sm text-primary-400 border-primary-500/20 bg-primary-500/5">
               <HiClock className="w-4 h-4" />
               {formatted}
             </div>
@@ -112,7 +117,7 @@ export default function InterviewPage() {
         {/* Progress bar */}
         <div className="h-1 bg-gray-800">
           <div
-            className="h-full bg-gradient-to-r from-primary-600 to-accent-500 transition-all duration-500"
+            className="h-full bg-gradient-to-r from-primary-600 to-accent-500 shadow-glow transition-all duration-500"
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -127,12 +132,12 @@ export default function InterviewPage() {
             <button
               key={i}
               onClick={() => setCurrentIdx(i)}
-              className={`w-9 h-9 rounded-lg text-sm font-semibold transition-all duration-200 ${
+              className={`w-10 h-10 rounded-xl text-sm font-bold transition-all duration-200 ${
                 i === currentIdx
                   ? 'bg-primary-600 text-white shadow-glow'
                   : answers[i]?.answer?.trim()
-                  ? 'bg-emerald-600/30 text-emerald-400 border border-emerald-500/30'
-                  : 'glass-card text-gray-400 hover:text-white'
+                  ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/30'
+                  : 'bg-white/5 border border-white/10 text-gray-500 hover:text-white hover:bg-white/10'
               }`}
             >
               {i + 1}
@@ -141,109 +146,117 @@ export default function InterviewPage() {
         </div>
 
         {/* Question card */}
-        <div className="glass-card p-8 mb-6 animate-slide-up">
-          <div className="flex items-start gap-4 mb-6">
-            <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-accent-600 flex items-center justify-center shadow-glow">
-              <HiSparkles className="w-5 h-5 text-white" />
+        <Card className="p-8 mb-6 animate-slide-up">
+          <div className="flex items-start gap-5 mb-6">
+            <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-gradient-to-br from-primary-500 to-accent-600 flex items-center justify-center shadow-glow">
+              <HiSparkles className="w-6 h-6 text-white" />
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-xs text-gray-500 font-medium">Question {currentIdx + 1} of {total}</span>
+                <span className="text-xs text-gray-500 font-bold uppercase tracking-wider">Question {currentIdx + 1} of {total}</span>
                 {current?.category && (
-                  <span className="badge badge-purple">{capitalize(current.category)}</span>
+                  <Badge type="purple">{capitalize(current.category)}</Badge>
                 )}
               </div>
-              <h2 className="text-lg sm:text-xl font-semibold text-white leading-relaxed">
+              <h2 className="text-xl sm:text-2xl font-bold text-white leading-relaxed">
                 {current?.question}
               </h2>
             </div>
           </div>
 
           {/* Answer textarea */}
-          <div>
-            <label className="text-sm text-gray-400 mb-2 block">Your Answer</label>
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-400 ml-1">Your Answer</label>
             <textarea
               id={`answer-${currentIdx}`}
-              rows={7}
+              rows={8}
               value={thisAnswer}
               onChange={(e) => updateAnswer(currentIdx, e.target.value)}
               placeholder="Type your answer here… Be thorough and specific. Use examples where possible."
-              className="input-field resize-none text-sm leading-relaxed"
+              className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-gray-600
+                         focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50
+                         transition-all duration-200 resize-none text-base leading-relaxed"
             />
-            <p className="text-xs text-gray-600 mt-1.5 text-right">{thisAnswer.length} characters</p>
+            <p className="text-xs text-gray-600 mt-2 text-right font-medium">{thisAnswer.length} characters</p>
           </div>
-        </div>
+        </Card>
 
         {/* Navigation buttons */}
         <div className="flex items-center justify-between gap-4">
-          <button
+          <Button
+            variant="secondary"
             onClick={() => setCurrentIdx((i) => Math.max(0, i - 1))}
             disabled={currentIdx === 0}
-            className="btn-secondary flex items-center gap-2 disabled:opacity-30"
+            className="flex items-center gap-2 py-3.5 px-6"
           >
             <HiChevronLeft className="w-5 h-5" /> Previous
-          </button>
+          </Button>
 
           <div className="flex items-center gap-3">
             {currentIdx < total - 1 ? (
-              <button
+              <Button
                 onClick={() => setCurrentIdx((i) => Math.min(total - 1, i + 1))}
-                className="btn-primary flex items-center gap-2"
+                className="flex items-center gap-2 py-3.5 px-8"
               >
                 Next <HiChevronRight className="w-5 h-5" />
-              </button>
+              </Button>
             ) : (
-              <button
+              <Button
                 onClick={() => setShowConfirm(true)}
-                className="btn-primary flex items-center gap-2"
+                className="flex items-center gap-2 py-3.5 px-8"
               >
                 <HiCheckCircle className="w-5 h-5" /> Submit Interview
-              </button>
+              </Button>
             )}
           </div>
         </div>
 
         {/* Unanswered warning */}
         {answered < total && (
-          <div className="mt-4 flex items-center gap-2 text-amber-400 text-sm glass-card px-4 py-3">
-            <HiExclamationCircle className="w-4 h-4 flex-shrink-0" />
-            <span>{total - answered} question{total - answered > 1 ? 's' : ''} unanswered. You can still submit.</span>
-          </div>
+          <Card className="mt-6 border-amber-500/20 bg-amber-500/5 p-4 flex items-center gap-3">
+            <HiExclamationCircle className="w-5 h-5 text-amber-500 flex-shrink-0" />
+            <span className="text-amber-400 text-sm font-medium">
+              {total - answered} question{total - answered > 1 ? 's' : ''} left unanswered. You can still submit for evaluation.
+            </span>
+          </Card>
         )}
       </div>
 
       {/* ── Confirm Submit Modal ── */}
       {showConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/60 backdrop-blur-sm">
-          <div className="glass-card p-8 max-w-md w-full animate-slide-up">
-            <HiCheckCircle className="w-12 h-12 text-primary-400 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-white text-center mb-2">Submit Interview?</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/80 backdrop-blur-md animate-fade-in">
+          <Card className="p-10 max-w-md w-full animate-slide-up shadow-2xl border-white/20">
+            <div className="w-16 h-16 rounded-full bg-primary-500/20 flex items-center justify-center mx-auto mb-6">
+              <HiCheckCircle className="w-10 h-10 text-primary-400" />
+            </div>
+            <h3 className="text-2xl font-bold text-white text-center mb-2">Submit Interview?</h3>
             <p className="text-gray-400 text-sm text-center mb-2">
-              You answered <span className="text-white font-semibold">{answered} of {total}</span> questions.
+              You answered <span className="text-white font-bold">{answered} of {total}</span> questions.
             </p>
-            <p className="text-gray-500 text-xs text-center mb-6">
-              Azure AI will evaluate all your answers and generate detailed feedback.
+            <p className="text-gray-500 text-xs text-center mb-8 px-4">
+              Azure AI will evaluate your responses and generate your performance report instantly.
             </p>
-            <div className="flex gap-3">
-              <button
+            <div className="flex gap-4">
+              <Button
+                variant="secondary"
                 onClick={() => setShowConfirm(false)}
                 disabled={submitting}
-                className="btn-secondary flex-1"
+                className="flex-1 py-3"
               >
-                Keep Going
-              </button>
-              <button
+                Go Back
+              </Button>
+              <Button
                 onClick={handleSubmit}
                 disabled={submitting}
-                className="btn-primary flex-1 flex items-center justify-center gap-2"
+                className="flex-1 py-3 flex items-center justify-center gap-2"
               >
                 {submitting
                   ? <><LoadingSpinner size="sm" /><span>Evaluating…</span></>
-                  : <><HiSparkles className="w-4 h-4" />Submit & Get Results</>
+                  : <><HiSparkles className="w-4 h-4" />Finish Now</>
                 }
-              </button>
+              </Button>
             </div>
-          </div>
+          </Card>
         </div>
       )}
     </div>
