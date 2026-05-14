@@ -1,0 +1,20 @@
+services:
+  # Backend + Frontend (using the Dockerfile in the root if we had one, 
+  # or we can deploy them separately. Since we have docker-compose, 
+  # Render can use that if we use their 'Blueprint'.)
+  
+  - type: web
+    name: ai-mock-interview-fullstack
+    env: docker
+    plan: free
+    region: oregon
+    envVars:
+      - key: MONGO_URI
+        fromValue: mongodb+srv://... # User needs to fill this
+      - key: JWT_SECRET
+        generateValue: true
+      - key: NODE_ENV
+        value: production
+    # Render will look for Dockerfile. 
+    # Since we have two, we should specify which one or use a root one.
+    # For simplicity, let's just use the server one and serve static files from it.

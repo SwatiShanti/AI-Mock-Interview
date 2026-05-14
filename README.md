@@ -2,6 +2,8 @@
 
 A **production-ready, full-stack AI Mock Interview Platform** built with **React + Vite + Tailwind CSS** (frontend) and **Node.js + Express + MongoDB + Azure OpenAI** (backend).
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/SwatiShanti/AI-Mock-Interview)
+
 ---
 
 ## ✨ Features
