@@ -171,30 +171,44 @@ Return ONLY valid JSON:
 
 // ── Mock Questions Fallback ───────────────────────────────
 const getMockQuestions = (jobRole, difficulty, count) => {
-  const mockBank = {
-    technical: [
-      { question: `Explain the core concepts you consider most important for a ${jobRole} role.`, category: 'technical' },
-      { question: `What is your experience with system design and architecture as a ${jobRole}?`, category: 'technical' },
-      { question: `Describe a complex technical problem you solved recently.`, category: 'technical' },
-      { question: `How do you approach debugging and troubleshooting in your work?`, category: 'technical' },
-      { question: `What tools and technologies are you most proficient with in the ${jobRole} domain?`, category: 'technical' },
+  const role = jobRole.toLowerCase();
+  
+  const specializedMock = {
+    frontend: [
+      { question: "Explain the difference between Virtual DOM and Shadow DOM.", category: "technical" },
+      { question: "How do you optimize a React application for better performance?", category: "technical" },
+      { question: "Describe your experience with CSS-in-JS vs traditional CSS.", category: "technical" }
     ],
-    behavioral: [
-      { question: 'Tell me about a time you had to learn a new technology quickly under pressure.', category: 'behavioral' },
-      { question: 'Describe a situation where you disagreed with a team decision. How did you handle it?', category: 'behavioral' },
-      { question: 'Give an example of when you went above and beyond for a project.', category: 'behavioral' },
-      { question: 'How do you handle tight deadlines and competing priorities?', category: 'behavioral' },
-      { question: 'Tell me about a project failure and what you learned from it.', category: 'behavioral' },
+    backend: [
+      { question: "Explain the difference between SQL and NoSQL databases.", category: "technical" },
+      { question: "How do you handle authentication and authorization in a Node.js app?", category: "technical" },
+      { question: "Describe how you would design a rate-limiting system.", category: "technical" }
     ],
-    situational: [
-      { question: `If you joined our team as a ${jobRole}, what would be your first 30 days plan?`, category: 'situational' },
-      { question: 'How would you handle a critical production outage at 2 AM?', category: 'situational' },
-      { question: 'If a junior developer on your team is struggling, how would you help them?', category: 'situational' },
-    ],
+    fullstack: [
+      { question: "How do you manage state across a complex full-stack application?", category: "technical" },
+      { question: "What is your preferred stack and why did you choose it for this project?", category: "technical" },
+      { question: "Explain the CI/CD pipeline you would set up for a production app.", category: "technical" }
+    ]
   };
 
-  const all = [...mockBank.technical, ...mockBank.behavioral, ...mockBank.situational];
-  return all.slice(0, count);
+  const genericMock = [
+    { question: `What are the most important trends in ${jobRole} development today?`, category: 'technical' },
+    { question: `Tell me about the most challenging project you've worked on as a ${jobRole}.`, category: 'behavioral' },
+    { question: `How do you ensure code quality and testing in your ${jobRole} projects?`, category: 'technical' },
+    { question: 'Tell me about a time you had to learn a new technology quickly under pressure.', category: 'behavioral' },
+    { question: `If you joined our team as a ${jobRole}, what would be your first 30 days plan?`, category: 'situational' },
+    { question: 'Describe a situation where you disagreed with a team decision. How did you handle it?', category: 'behavioral' },
+    { question: 'How do you handle tight deadlines and competing priorities?', category: 'behavioral' },
+    { question: 'Tell me about a project failure and what you learned from it.', category: 'behavioral' }
+  ];
+
+  let pool = [...genericMock];
+  if (role.includes('front')) pool = [...specializedMock.frontend, ...pool];
+  if (role.includes('back')) pool = [...specializedMock.backend, ...pool];
+  if (role.includes('stack') || role.includes('full')) pool = [...specializedMock.fullstack, ...pool];
+
+  // Shuffle and pick
+  return pool.sort(() => 0.5 - Math.random()).slice(0, count);
 };
 
 module.exports = { generateQuestions, evaluateAnswer, generateOverallFeedback };
