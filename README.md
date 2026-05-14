@@ -2,11 +2,34 @@
 
 A **production-ready, full-stack AI Mock Interview Platform** built with **React + Vite + Tailwind CSS** (frontend) and **Node.js + Express + MongoDB + Azure OpenAI** (backend).
 
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/SwatiShanti/AI-Mock-Interview)
-
 ---
 
-## ✨ Features
+## 🚀 Cloud Deployment Guide
+
+This project is optimized for the **Vercel (Frontend) + Render (Backend) + MongoDB Atlas (Database)** stack.
+
+### 1. Database (MongoDB Atlas)
+1.  Create a free cluster on [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
+2.  Get your **Connection String** (e.g., `mongodb+srv://...`).
+3.  Whitelist `0.0.0.0/0` (or the Render IP range) in Atlas Network Access.
+
+### 2. Backend (Render)
+1.  Connect your GitHub repo to [Render](https://render.com).
+2.  Select **"Web Service"** and point it to the `server/` directory.
+3.  **Environment Variables**:
+    *   `MONGO_URI`: Your Atlas string.
+    *   `JWT_SECRET`: A long random string.
+    *   `CLIENT_URL`: Your Vercel URL (add this *after* deploying frontend).
+    *   `AZURE_OPENAI_API_KEY`: Your key.
+    *   `AZURE_OPENAI_ENDPOINT`: Your endpoint.
+
+### 3. Frontend (Vercel)
+1.  Connect your repo to [Vercel](https://vercel.com).
+2.  Set the **Root Directory** to `client/`.
+3.  **Environment Variables**:
+    *   `VITE_API_BASE_URL`: Your Render service URL (e.g., `https://backend.onrender.com/api`).
+
+---
 
 | Feature | Details |
 |---------|---------|

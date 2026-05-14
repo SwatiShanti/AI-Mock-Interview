@@ -1,20 +1,28 @@
 services:
-  # Backend + Frontend (using the Dockerfile in the root if we had one, 
-  # or we can deploy them separately. Since we have docker-compose, 
-  # Render can use that if we use their 'Blueprint'.)
-  
+  # --- Backend Service (on Render) ---
   - type: web
-    name: ai-mock-interview-fullstack
-    env: docker
+    name: ai-mock-interview-backend
+    env: node
     plan: free
     region: oregon
+    buildCommand: npm install
+    startCommand: node server.js
     envVars:
-      - key: MONGO_URI
-        fromValue: mongodb+srv://... # User needs to fill this
-      - key: JWT_SECRET
-        generateValue: true
       - key: NODE_ENV
         value: production
-    # Render will look for Dockerfile. 
-    # Since we have two, we should specify which one or use a root one.
-    # For simplicity, let's just use the server one and serve static files from it.
+      - key: PORT
+        value: 10000
+      - key: MONGO_URI
+        sync: false # Provide your MongoDB Atlas URL here
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CLIENT_URL
+        sync: false # Provide your Vercel frontend URL here
+      - key: AZURE_OPENAI_ENDPOINT
+        sync: false
+      - key: AZURE_OPENAI_API_KEY
+        sync: false
+      - key: AZURE_OPENAI_DEPLOYMENT
+        value: gpt-4o
+      - key: AZURE_OPENAI_API_VERSION
+        value: 2024-02-01
